@@ -1,0 +1,66 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define int long long
+int c[100010];
+vector<pair<int, int> >a[100010];
+int ans;
+int f[100010];
+int siz[100010];
+int n;
+
+void dfs1(int x, int fa) {
+	siz[x] = c[x];
+	for (int i = 0; i < a[x].size(); i++) {
+		if (a[x][i].first == fa)
+			continue;
+		dfs1(a[x][i].first, x);
+		//	if (x == 3) {
+		//		cout << "3!!!: " << siz[x] << " " << siz[a[x][i].first] << endl;
+		//	}
+		siz[x] += siz[a[x][i].first];
+		//	cout << "ans: " << ans << " dian: " << a[x][i].first << " siz[a[x][i],first] " << siz[a[x][i].first] << endl;
+		ans += siz[a[x][i].first] * a[x][i].second;
+
+	}
+}
+
+void dfs2(int x, int fa) {
+	for (int i = 0; i < a[x].size(); i++) {
+		if (a[x][i].first == fa)
+			continue;
+		f[a[x][i].first] = f[x] - (siz[a[x][i].first] * a[x][i].second) + ((siz[1] - siz[a[x][i].first]) * a[x][i].second);
+		/*	if (a[x][i].first == 3) {
+				cout << "x: " << x << "f[x] " << f[x] << " siz[a[x][i].first]: " << siz[a[x][i].first] << " a[x][i].first " <<
+				     a[x][i].first << "a[x][i].second" << a[x][i].second << endl;
+
+			}*/
+		dfs2(a[x][i].first, x);
+	}
+}
+
+signed main() {
+
+	scanf("%d", &n);
+	for (int i = 1; i <= n; i++) {
+		scanf("%lld", &c[i]);
+	}
+	for (int i = 1; i < n; i++) {
+		int x, y, z;
+		scanf("%lld %lld %lld", &x, &y, &z);
+		a[x].push_back(make_pair(y, z));
+		a[y].push_back(make_pair(x, z));
+	}
+	dfs1(1, 0);
+	f[1] = ans;
+	dfs2(1, 0);
+	int anss = 1e18 * 1ll;
+//	for (int i = 1; i <= n; i++) {
+//		cout << "siz: " << siz[i] << endl;
+//	}
+	for (int i = 1; i <= n; i++) {
+		anss = min(anss, f[i]);
+		//	cout << " i: " << i << " f[i] " << f[i] << endl;
+	}
+	cout << anss << endl;
+//	cout << "f[1]: " << ans << endl;
+}
